@@ -1,0 +1,24 @@
+deploy monitor:
+  pkg.installed:
+    - pkgs:
+      - cacti
+      - cacti-spine
+      - rrdtool 
+copy debian.conf:
+  file.managed:
+     - name: /etc/cacti/debian.php
+     - source: salt://cacti/debian.php
+copy spine.conf:
+  file.managed:
+     - name: /etc/cacti/spine.conf
+     - source: salt://cacti/spine.conf
+restart apache2:
+  cmd.run:
+    - name: sudo systemctl restart apache2
+
+
+ cmd.run:
+    - names:
+      - mysql -u root -e "CREATE DATABASE cacti;"
+      - mysql -u root -e "GRANT ALL ON cacti.* TO cactiuser@localhost IDENTIFIED BY 'cactipassword';"
+      - mysql -u root -e "FLUSH PRIVILEGES"
